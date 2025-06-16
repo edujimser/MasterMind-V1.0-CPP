@@ -34,23 +34,35 @@ char* ponerMayuscula(char codigoAdivinador[]) {
 	return codigoAdivinador;
 }
 int Calcularesultados(char codigoAdivinador[], char codigoPensador[], int LARGO_CODIGO, int resultados[]) {
-	resultados[0] = 0; // Coincidencias exactas
-	resultados[1] = 0; // Coincidencias parciales
+	resultados[0] = 0;
+	resultados[1] = 0;
 
+	bool usadoPensador[4] = { false };
+	bool usadoAdivinador[4] = { false };
+
+	// Primero, coincidencias exactas
 	for (int i = 0; i < LARGO_CODIGO; i++) {
 		if (codigoAdivinador[i] == codigoPensador[i]) {
-			resultados[0]++; // Coincidencia exacta
+			resultados[0]++;
+			usadoPensador[i] = true;
+			usadoAdivinador[i] = true;
 		}
-		else {
-			for (int j = 0; j < LARGO_CODIGO; j++) {
-				if (i != j && codigoAdivinador[i] == codigoPensador[j]) {
-					resultados[1]++; // Coincidencia parcial
-					break;
-				}
+	}
+
+	// Luego, coincidencias parciales
+	for (int i = 0; i < LARGO_CODIGO; i++) {
+		if (usadoAdivinador[i]) continue;
+
+		for (int j = 0; j < LARGO_CODIGO; j++) {
+			if (!usadoPensador[j] && codigoAdivinador[i] == codigoPensador[j]) {
+				resultados[1]++;
+				usadoPensador[j] = true;
+				break;
 			}
 		}
 	}
-	return resultados[0] + resultados[1]; // Retorna la suma de coincidencias
+
+	return resultados[0] + resultados[1];
 }
 
 int main()
@@ -103,6 +115,12 @@ int main()
 			std::cout << "Felicidades, has adivinado el codigo!" << std::endl;
 			exit(0);
 		}
+		else if (i == 9 && resultados[0] != 4) {
+			std::cout << "" << std::endl;
+			std::cout << "Has agotado todos los intentos, el codigo era: " << std::string(codigoPensador, LARGO_CODIGO) << std::endl;
+			exit(0);
+		};
+
 	}
 }
 
